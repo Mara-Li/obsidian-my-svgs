@@ -18,6 +18,12 @@
 	margin-bottom: 1.5rem;
 }
 
+input[type='text'].my-svgs-is-invalid {
+	--background-modifier-border: var(--text-error);
+	--background-modifier-border-focus: var(--text-error);
+	--background-modifier-border-hover: var(--text-error);
+}
+
 .my-svgs-instructions-section .my-svgs-setting-heading {
 	margin-top: 0;
 	margin-bottom: 1rem;
@@ -225,46 +231,55 @@
 		border-color: var(--text-muted);
 		color: var(--text-muted);
 	}
+
 	12% {
 		box-shadow: 0 0 20px var(--text-faint);
 		border-color: var(--text-faint);
 		color: var(--text-faint);
 	}
+
 	25% {
 		box-shadow: 0 0 20px var(--text-accent);
 		border-color: var(--text-accent);
 		color: var(--text-accent);
 	}
+
 	37% {
 		box-shadow: 0 0 20px var(--text-accent-hover);
 		border-color: var(--text-accent-hover);
 		color: var(--text-accent-hover);
 	}
+
 	50% {
 		box-shadow: 0 0 20px var(--text-success);
 		border-color: var(--text-success);
 		color: var(--text-success);
 	}
+
 	62% {
 		box-shadow: 0 0 20px var(--text-warning);
 		border-color: var(--text-warning);
 		color: var(--text-warning);
 	}
+
 	75% {
 		box-shadow: 0 0 20px var(--text-error);
 		border-color: var(--text-error);
 		color: var(--text-error);
 	}
+
 	87% {
 		box-shadow: 0 0 20px #000000;
 		border-color: #000000;
 		color: #000000;
 	}
+
 	93% {
 		box-shadow: 0 0 20px #ffffff;
 		border-color: #ffffff;
 		color: #ffffff;
 	}
+
 	100% {
 		box-shadow: 0 0 20px var(--text-muted);
 		border-color: var(--text-muted);
@@ -430,8 +445,7 @@
 }
 
 .my-svgs-icon-card:hover .my-svgs-icon-preview {
-	box-shadow: 0 0 20px
-		var(--interactive-accent-hover, var(--interactive-accent));
+	box-shadow: 0 0 20px var(--interactive-accent-hover, var(--interactive-accent));
 }
 
 .my-svgs-icon-card {

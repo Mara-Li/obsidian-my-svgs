@@ -55,7 +55,7 @@ export default class MySvgsPlugin extends Plugin {
 	 * transformToRegex("/icon$/i") => /icon$/i
 	 * transformToRegex("/^icon-(home|alert)$/") => /^icon-(home|alert)$/
 	 */
-	private transformToRegex(pattern: string): RegExp {
+	parseRegex(pattern: string): RegExp {
 		const regexParts = /^\/(?<regex>.*)\/(?<flags>[gmiyuvsd]+)?$/i.exec(
 			pattern,
 		);
@@ -92,7 +92,7 @@ export default class MySvgsPlugin extends Plugin {
 			const slugifyOptions: slugifyOptions = {
 				replacement: this.settings.slugify.replacement,
 				remove: this.settings.slugify.remove
-					? this.transformToRegex(this.settings.slugify.remove)
+					? this.parseRegex(this.settings.slugify.remove)
 					: undefined,
 				lower: this.settings.slugify.lower,
 				trim: this.settings.slugify.trim,

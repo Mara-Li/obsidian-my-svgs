@@ -90,17 +90,29 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 				.setDesc(
 					'Regex pattern of characters to remove from icon names (e.g., /[!@#$%^&*(),.?":{}|<>]/g)',
 				)
-				.addText((text) =>
+				.addText((text) => {
 					text
 						.setPlaceholder('/[!@#$%^&*(),.?":{}|<>]/g')
-						.setValue(this.plugin.settings.slugify.remove ?? "")
-						.onChange(async (value) => {
-							this.plugin.settings.slugify.remove = value;
-							if (value.trim().length === 0)
-								this.plugin.settings.slugify.remove = undefined;
+						.setValue(this.plugin.settings.slugify.remove ?? "");
+					text.inputEl.onblur = async () => {
+						text.inputEl.removeClass("my-svgs-is-invalid");
+						const val = text.getValue();
+						if (val) {
+							try {
+								this.plugin.parseRegex(val);
+								this.plugin.settings.slugify.remove = val;
+								await this.plugin.saveSettings();
+							} catch (error) {
+								new Notice("Invalid regex pattern. Please check your input.");
+								console.error("Invalid regex pattern:", error);
+								text.inputEl.addClass("my-svgs-is-invalid");
+							}
+						} else {
+							this.plugin.settings.slugify.remove = undefined;
 							await this.plugin.saveSettings();
-						}),
-				);
+						}
+					};
+				});
 			new Setting(containerEl)
 				.setName("Lowercase")
 				.setDesc("Convert icon names to lowercase")
