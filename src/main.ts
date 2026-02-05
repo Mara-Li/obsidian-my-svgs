@@ -1,6 +1,10 @@
 import { addIcon, Notice, normalizePath, Plugin } from "obsidian";
 import slugify from "slugify";
-import { DEFAULT_SETTINGS, type MySvgsSettings } from "./interfaces";
+import {
+	DEFAULT_SETTINGS,
+	type MySvgsSettings,
+	type slugifyOptions,
+} from "./interfaces";
 import { SvgIconsSettingTab } from "./settings";
 import "uniformize";
 export default class MySvgsPlugin extends Plugin {
@@ -39,7 +43,6 @@ export default class MySvgsPlugin extends Plugin {
 				.join("")
 				.toTitle();
 		}
-		console.log(lastPart.substring(0, 2).toTitle());
 		return lastPart.substring(0, 2).toTitle();
 	}
 
@@ -53,18 +56,21 @@ export default class MySvgsPlugin extends Plugin {
 	 * transformToRegex("/^icon-(home|alert)$/") => /^icon-(home|alert)$/
 	 */
 	private transformToRegex(pattern: string): RegExp {
-		const regexParts = (/^\/(?<regex>.*)\/(?<flags>[gmiyuvsd]+)$/i).exec(pattern);
+		const regexParts = /^\/(?<regex>.*)\/(?<flags>[gmiyuvsd]+)?$/i.exec(
+			pattern,
+		);
 		if (!regexParts || !regexParts.groups) {
 			throw new Error(`Invalid regex pattern: ${pattern}`);
 		}
 		const { regex, flags } = regexParts.groups;
-		if (!regex) 
-			throw new Error(`Regex pattern is empty in: ${pattern}`);
+		if (!regex) throw new Error(`Regex pattern is empty in: ${pattern}`);
 		//prevent duplicate flags
-		const uniqueFlags = flags ? Array.from(new Set(flags.split(""))).join("") : undefined;
+		let uniqueFlags = flags
+			? Array.from(new Set(flags.split(""))).join("")
+			: "g";
+		if (!uniqueFlags.includes("g")) uniqueFlags += "g";
 		//escape needed characters
 		return new RegExp(regex, uniqueFlags);
-		
 	}
 
 	/**
@@ -83,7 +89,7 @@ export default class MySvgsPlugin extends Plugin {
 		if (pathParts.length <= 1) return `${this.settings.iconPrefix}${baseName}`;
 		if (this.settings.generatePrefixFromPath) {
 			const fileName = `${this.getFolderPrefix(filePath, baseName)} ${baseName}`;
-			const slugifyOptions = {
+			const slugifyOptions: slugifyOptions = {
 				replacement: this.settings.slugify.replacement,
 				remove: this.settings.slugify.remove
 					? this.transformToRegex(this.settings.slugify.remove)

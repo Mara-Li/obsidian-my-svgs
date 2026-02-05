@@ -30,3 +30,11 @@ export const DEFAULT_SETTINGS: MySvgsSettings = {
 		strict: false,
 	},
 };
+
+export type slugifyOptions = Partial<{
+	replacement: string;
+	remove: RegExp;
+	lower: boolean;
+	trim: boolean;
+	strict: boolean;
+}>;
