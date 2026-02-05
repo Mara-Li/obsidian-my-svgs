@@ -44,6 +44,30 @@ export default class MySvgsPlugin extends Plugin {
 	}
 
 	/**
+	 * Pattern is in the form of `/str/flags`
+	 * @param pattern {string} The pattern to convert to a RegExp
+	 * @returns {RegExp} The resulting RegExp object
+	 * @example
+	 * transformToRegex("/^icon-/") => /^icon-/
+	 * transformToRegex("/icon$/i") => /icon$/i
+	 * transformToRegex("/^icon-(home|alert)$/") => /^icon-(home|alert)$/
+	 */
+	private transformToRegex(pattern: string): RegExp {
+		const regexParts = (/^\/(?<regex>.*)\/(?<flags>[gmiyuvsd]+)$/i).exec(pattern);
+		if (!regexParts || !regexParts.groups) {
+			throw new Error(`Invalid regex pattern: ${pattern}`);
+		}
+		const { regex, flags } = regexParts.groups;
+		if (!regex) 
+			throw new Error(`Regex pattern is empty in: ${pattern}`);
+		//prevent duplicate flags
+		const uniqueFlags = flags ? Array.from(new Set(flags.split(""))).join("") : undefined;
+		//escape needed characters
+		return new RegExp(regex, uniqueFlags);
+		
+	}
+
+	/**
 	 * Generate the prefix from the folder path instead to use a global prefix
 	 * It is usable ONLY for subfolders, icons on a one folder level will be loaded with the global prefix
 	 * @example tabler-icon/home.svg will be loaded as ti-home, tabler-icon/alerts/alert.svg will be loaded as ti-alerts-alert
@@ -62,7 +86,7 @@ export default class MySvgsPlugin extends Plugin {
 			const slugifyOptions = {
 				replacement: this.settings.slugify.replacement,
 				remove: this.settings.slugify.remove
-					? new RegExp(this.settings.slugify.remove)
+					? this.transformToRegex(this.settings.slugify.remove)
 					: undefined,
 				lower: this.settings.slugify.lower,
 				trim: this.settings.slugify.trim,

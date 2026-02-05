@@ -69,7 +69,7 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 				.setName("Slugify options")
 				.setHeading()
 				.setDesc(
-					"Configure how folder and file names are transformed into icon names when generating prefix from path.",
+					"Configure how the svg file names are transformed into icon names when generating prefix from path.",
 				);
 
 			new Setting(containerEl)

@@ -1,16 +1,3 @@
-/**
- * settings = {
-		iconPrefix: "my-",
-		customFolderPath: "",
-		generatePrefixFromPath: false,
-		slugify: {
-			replacement: "-", //replace space with a characters
-			remove: undefined, //remove characters that match regex
-			lower: false, //convert to lowercase
-			trim: true, //trim leading and trailing replacement chars
-			strict: false, //strip special characters except replacement
-		},
- */
 export interface MySvgsSettings {
 	iconPrefix: string;
 	customFolderPath: string;
