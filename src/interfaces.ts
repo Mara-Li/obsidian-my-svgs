@@ -23,7 +23,7 @@ export const DEFAULT_SETTINGS: MySvgsSettings = {
 	customFolderPath: "",
 	generatePrefixFromPath: false,
 	slugify: {
-		replacement: "-",
+		replacement: "",
 		remove: undefined,
 		lower: false,
 		trim: true,

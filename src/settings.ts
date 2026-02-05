@@ -74,7 +74,7 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 
 			new Setting(containerEl)
 				.setName("Replacement character")
-				.setDesc("Character to replace spaces with in icon names")
+				.setDesc("Character to replace spaces within the icon name.")
 				.addText((text) =>
 					text
 						.setPlaceholder("-")
@@ -139,7 +139,7 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 
 			new Setting(containerEl)
 				.setName("Trim")
-				.setDesc("trim leading and trailing replacement chars")
+				.setDesc("Trim leading and trailing replacement chars")
 				.addToggle((toggle) =>
 					toggle
 						.setValue(this.plugin.settings.slugify.trim)
