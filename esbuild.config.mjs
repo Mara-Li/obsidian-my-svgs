@@ -1,14 +1,16 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import builtins from "builtin-modules";
+import { builtinModules } from 'node:module';
 import { Command } from "commander";
-import dotenv from "dotenv";
 import esbuild from "esbuild";
 import manifest from "./manifest.json" with { type: "json" };
 import packageJson from "./package.json" with { type: "json" };
+import { loadEnvFile } from 'node:process';
 
 // Initial configuration
-dotenv.config({ path: [".env"] });
+if (fs.existsSync(".env")) {
+	loadEnvFile(".env");
+}
 
 // Parsing command line arguments
 const program = new Command();
@@ -122,7 +124,7 @@ async function buildPlugin() {
 			"@lezer/common",
 			"@lezer/highlight",
 			"@lezer/lr",
-			...builtins,
+			...builtinModules,
 		],
 		format: "cjs",
 		target: "esnext",
