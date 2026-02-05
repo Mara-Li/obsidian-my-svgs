@@ -4,3 +4,5 @@ dist
 main.js
 .hotreload
 .vscode
+styles.css
+!src/styles.css
