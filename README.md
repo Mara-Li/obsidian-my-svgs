@@ -14,6 +14,28 @@ This is a straightforward plugin that allows you to use custom SVG icons in your
 - Error messages, console logging, and instructions
 - Continues loading remaining icons if one fails
 
+## Settings
+1. **Prefix** : Prefix for loaded icon (allowing to search for them in other plugins)
+2. **Custom icons folder path**: Use another folder than the default one (default: plugin folder)
+3. **Generate prefix from path**: If the svg are in nested folder, the prefix will be generated from it. See [prefix generation](#prefix-generation) for more information.
+4. **Slugify options**: If the previous settings is enabled, allow to set some option that will be used by [slugify](https://www.npmjs.com/package/slugify) to generate the name.
+   - **Replacement character** : Replace the space with it in icon names
+   - **Remove characters (regex)** : A regex (form of `/xxxx/`) used to remove character that match.
+   - **Lowercase** : Convert the path to lowercase
+   - **Strict** : Strip special characters except the replacement
+   - **Trim** : Trim leading and trailing replacement chars.
+
+### Prefix generation
+
+This settings, without any slugify options, allow to set the exact same name for icon that has been used by [Iconize](https://github.com/FlorianWoelki/obsidian-iconize).
+
+It can be used when you use the same tree from the iconize's icon folder. Icon name are created as follows:
+- Folder will strip to the two first letter (`boxicons ⇒ bo`) and title-cased (`bo => Bo`)
+- If the folder is composed by multiple words (`my folders`, `my-folders`, `my.folders` or `my_folders`), the prefix will be `mf` and title cased (`Mf`)
+- Space will be removed entirely
+- If there is no nested folder, the general prefix will be used and happened directly to the icon name as `{prefix}{icon}`
+
+For slugify and how it works, see [the documentation](https://www.npmjs.com/package/slugify) of the library used.
 
 ## Installation
 
@@ -36,7 +58,6 @@ The plugin processes SVGs to ensure compatibility with Obsidian's icon system:
 
    - No built-in way to delete or rename icons
    - No automatic reload when files change (manual reload required)
-   - No support for nested folders in the icons directory
    - Could be optimized for large icon collections
    - Basic SVG sanitization could be more comprehensive
    - No validation of SVG content beyond basic processing
