@@ -6,6 +6,7 @@
     "@types/bun": "latest",
     "@types/node": "^25.2.1",
     "commander": "^14.0.3",
+    "commit-and-tag-version": "^12.6.1",
     "esbuild": "^0.27.2",
     "slugify": "^1.6.6",
     "tslib": "latest",
@@ -14,12 +15,27 @@
   },
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs --production"
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs --production",
+    "prerelease" :"tsc -noEmit -skipLibCheck",
+    "release" : "commit-and-tag-version"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
     "obsidian": "^1.11.4"
+  },
+  "commit-and-tag-version": {
+    "t": "",
+    "bumpFiles": [
+      {
+        "filename": "package.json",
+        "type": "json"
+      },
+      {
+        "filename": "manifest.json",
+        "type": "json"
+      }
+    ]
   }
 }
