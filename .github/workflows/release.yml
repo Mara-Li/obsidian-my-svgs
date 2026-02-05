@@ -1,0 +1,46 @@
+name: Release obsidian plugin
+
+on: 
+  push: 
+    tags:
+      - "*"
+
+permissions:
+  content: write
+
+env:
+  PLUGIN_NAME: my-svgs
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ""
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+      - name: build
+        run: bun run build --output-dir ${{env.PLUGIN_NAME}}
+      - name: Get version
+        id: tags
+        run: |
+          echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+      - name: Create Release with css
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
+          VERSION: "${{ env.VERSION }}"
+          PRERELEASE: ${{ env.PRERELEASE }}
+        with:
+          tag_name: "${{ env.VERSION }}"
+          name: "${{ env.VERSION }}"
+          draft: false
+          prerelease: ${{ env.PRERELEASE }}
+          token: "${{ secrets.GH_TOKEN }}"
+          files: |
+            ${{env.PLUGIN_NAME}}.zip
+            ${{env.PLUGIN_NAME}}/main.js
+            ${{env.PLUGIN_NAME}}/manifest.json
+            ${{env.PLUGIN_NAME}}/styles.css
