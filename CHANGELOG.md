@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.1](https://github.com/Mara-Li/obsidian-my-svgs/compare/1.2.0...1.2.1) (2026-02-06)
+
+
+### Bug Fixes
+
+* icons not converted + wrong name for lucide ([7436b99](https://github.com/Mara-Li/obsidian-my-svgs/commit/7436b991590e9d5d818dd210c5b4261c406a4293))
+
 ## [1.2.0](https://github.com/Mara-Li/obsidian-my-svgs/compare/1.1.0...1.2.0) (2026-02-06)
 
 
