@@ -37,6 +37,16 @@ It can be used when you use the same tree from the iconize's icon folder. Icon n
 
 For slugify and how it works, see [the documentation](https://www.npmjs.com/package/slugify) of the library used.
 
+## Iconize to iconic
+
+If you have Iconize and want to migrate to iconic, you can use this plugin to make the migration for you.
+First, you need to have enabled the two plugins, and a button `Convert iconize settings to iconic" should appear. On click, it will proceed to the migration. 
+
+> [!Important]
+> 1. The migration is destructive: if iconic have data for a specific file or folder, the data from iconize (if any) will overwrite it.
+> 2. Rules are not supported: only the specific icon for a files/folder is migrated.
+> 3. You need to reload iconic to make it works.
+
 ## Installation
 
 1. If it doesn't already exist, Create an `icons` folder in your plugin directory: `"YourVaultName"/.obsidian/plugins/my-svgs/icons/`
@@ -62,6 +72,8 @@ The plugin processes SVGs to ensure compatibility with Obsidian's icon system:
    - Basic SVG sanitization could be more comprehensive
    - No validation of SVG content beyond basic processing
    - No size limits on SVG files
+   - Manual reload required for plugin using the icon.
+   - No auto migration for plugin that use the svgs and the prefix of it is modified.
 
 ## Contributing
 
