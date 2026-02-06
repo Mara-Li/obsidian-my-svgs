@@ -2,6 +2,7 @@ import {
 	type App,
 	Modal,
 	Notice,
+	normalizePath,
 	PluginSettingTab,
 	Setting,
 	sanitizeHTMLToDom,
@@ -156,9 +157,12 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 						}),
 				);
 		}
-
-		const needButton = this.app.plugins.getPlugin("iconic");
-		this.app.plugins.getPlugin("obsidian-icon-folder");
+		const iconicFolder =
+			this.app.plugins.manifests.iconic?.dir ||
+			normalizePath(`${this.app.vault.configDir}/iconic`);
+		const needButton =
+			this.app.plugins.getPlugin("iconic") &&
+			this.app.plugins.getPlugin("obsidian-icon-folder");
 		if (needButton) {
 			new Setting(containerEl)
 				.addButton((cb) =>
@@ -167,7 +171,7 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 							new InfoModal(
 								this.app,
 								"Confirmation",
-								"Are you sure you want to proceed?<br/><br/>The data of Iconize will overwrite the one in Iconic if any folder has already icon information",
+								`Are you sure you want to proceed?<br/><br/>The data of Iconize will overwrite the one in Iconic if any folder has already icon information. Moreover, colors and rules won't be added.<br><br>The plugin will create a backup file before the migration in <code>${normalizePath(`${iconicFolder}/data_backup_mysvgs.json`)}</code>`,
 								async (ok) => {
 									if (ok) await this.convertIconize();
 								},
@@ -438,9 +442,30 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 		}
 	}
 
+	getLucideIconName(iconName: string) {
+		//separate the words by the uppercase
+		//for example LiMyIcon = [Li, My, Icon]
+		if (iconName.startsWith("Li")) {
+			const splitted = iconName.split(/(?=[A-Z])/);
+			if (splitted.length > 1)
+				return `lucide-${splitted.slice(1).join("-")}`.toLowerCase();
+		}
+
+		return iconName;
+	}
+
 	async convertIconize() {
 		//first load the plugin settings
 		const iconize = this.app.plugins.getPlugin("obsidian-icon-folder");
+		if (!iconize) {
+			new Notice("Iconize plugin doesn't exists or is not enabled");
+			return;
+		}
+		const iconic = this.app.plugins.getPlugin("iconic");
+		if (!iconic) {
+			new Notice("Iconic plugin not enabled");
+			return;
+		}
 		const errors: { path: string; icon: unknown }[] = [];
 		let proceeded: number = 0;
 		function getIcon(
@@ -459,17 +484,15 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 			}
 			return undefined;
 		}
-
-		if (!iconize) {
-			new Notice("Iconize plugin doesn't exists or is not enabled");
-			return;
-		}
-		const iconic = this.app.plugins.getPlugin("iconic");
-		if (!iconic) {
-			new Notice("Iconic plugin not enabled");
-			return;
-		}
 		const iconicSettings = (await iconic.loadData()) as Record<string, unknown>;
+		const iconicFolder =
+			this.app.plugins.manifests.iconic?.dir ||
+			normalizePath(`${this.app.vault.configDir}/iconic`);
+		//backup
+		await this.app.vault.adapter.write(
+			normalizePath(`${iconicFolder}/data_backup_mysvgs.json`),
+			JSON.stringify(iconicSettings),
+		);
 		const iconizeSettings = (await iconize.loadData()) as Record<
 			string,
 			unknown
@@ -495,10 +518,12 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 				errors.push({ path, icon });
 				continue;
 			}
-			if (iconicFileIcon[path]?.icon) iconicFileIcon[path].icon = goodIcon;
+			const convertToLucide = this.getLucideIconName(goodIcon);
+			if (iconicFileIcon[path]?.icon)
+				iconicFileIcon[path].icon = convertToLucide;
 			else {
 				iconicFileIcon[path] = {
-					icon: goodIcon,
+					icon: convertToLucide,
 					unsynced: [this.app.appId],
 				};
 			}

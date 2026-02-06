@@ -24,7 +24,8 @@
       "ES7"
     ],
     "types": [
-      "obsidian-typings"
+      "obsidian-typings",
+      "@types"
     ]
   },
   "include": [
