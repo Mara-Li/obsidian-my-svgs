@@ -25,7 +25,8 @@
     ],
     "types": [
       "obsidian-typings",
-      "@types"
+      "node",
+      "bun"
     ]
   },
   "include": [
