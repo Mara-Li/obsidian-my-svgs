@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.0](https://github.com/Mara-Li/obsidian-my-svgs/compare/1.1.0...1.2.0) (2026-02-06)
+
+
+### Features
+
+* add migrator for iconize => iconic ([cdb2032](https://github.com/Mara-Li/obsidian-my-svgs/commit/cdb2032f1b0edd71beab4e1a00ea6269f8a41a50))
+
 ## [1.1.0](https://github.com/Mara-Li/obsidian-my-svgs/compare/1.0.1...1.1.0) (2026-02-05)
 
 
