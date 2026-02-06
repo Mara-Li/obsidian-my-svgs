@@ -38,7 +38,7 @@ export default class MySvgsPlugin extends Plugin {
 		if (!lastPart) return this.settings.iconPrefix;
 		if (lastPart.includes("-")) {
 			return lastPart
-				.split(/- _./)
+				.split(/[- _.]+/)
 				.filter((x) => x.trim().length > 0)
 				.map((word) => word.charAt(0))
 				.join("")

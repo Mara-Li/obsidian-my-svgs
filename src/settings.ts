@@ -1,4 +1,11 @@
-import { type App, Notice, PluginSettingTab, Setting } from "obsidian";
+import {
+	type App,
+	Modal,
+	Notice,
+	PluginSettingTab,
+	Setting,
+	sanitizeHTMLToDom,
+} from "obsidian";
 import type MySvgsPlugin from "./main";
 
 export class SvgIconsSettingTab extends PluginSettingTab {
@@ -148,6 +155,29 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						}),
 				);
+		}
+
+		const needButton = this.app.plugins.getPlugin("iconic");
+		this.app.plugins.getPlugin("obsidian-icon-folder");
+		if (needButton) {
+			new Setting(containerEl)
+				.addButton((cb) =>
+					cb
+						.onClick(async () =>
+							new InfoModal(
+								this.app,
+								"Confirmation",
+								"Are you sure you want to proceed?<br/><br/>The data of Iconize will overwrite the one in Iconic if any folder has already icon information",
+								async (ok) => {
+									if (ok) await this.convertIconize();
+								},
+							).open(),
+						)
+						.setButtonText("Convert now")
+						.setCta(),
+				)
+				.setName("Convert iconize settings to iconic")
+				.setDesc("Copy the svg name from iconize to iconic settings");
 		}
 
 		const instructionsSection = containerEl.createEl("div", {
@@ -405,6 +435,138 @@ export class SvgIconsSettingTab extends PluginSettingTab {
 			errorMsg.createEl("p", {
 				text: `Error loading icons: ${(error as Error).message}`,
 			});
+		}
+	}
+
+	async convertIconize() {
+		//first load the plugin settings
+		const iconize = this.app.plugins.getPlugin("obsidian-icon-folder");
+		const errors: { path: string; icon: unknown }[] = [];
+		let proceeded: number = 0;
+		function getIcon(
+			icon:
+				| string
+				| {
+						iconName: string | null;
+						inheritanceIcon?: string;
+						iconColor?: string;
+				  },
+		) {
+			if (typeof icon === "string") return icon;
+			else {
+				if (icon.iconName) return icon.iconName;
+				if (icon.inheritanceIcon) return icon.inheritanceIcon;
+			}
+			return undefined;
+		}
+
+		if (!iconize) {
+			new Notice("Iconize plugin doesn't exists or is not enabled");
+			return;
+		}
+		const iconic = this.app.plugins.getPlugin("iconic");
+		if (!iconic) {
+			new Notice("Iconic plugin not enabled");
+			return;
+		}
+		const iconicSettings = (await iconic.loadData()) as Record<string, unknown>;
+		const iconizeSettings = (await iconize.loadData()) as Record<
+			string,
+			unknown
+		>;
+		if (iconizeSettings.settings) delete iconizeSettings.settings;
+		const iconicFileIcon = iconicSettings.fileIcons as Record<
+			string,
+			{ icon: string; unsynced: string[] }
+		>;
+		for (const [path, icon] of Object.entries(
+			iconizeSettings as Record<
+				string,
+				| string
+				| {
+						iconName: string | null;
+						inheritanceIcon?: string;
+						iconColor?: string;
+				  }
+			>,
+		)) {
+			const goodIcon = getIcon(icon);
+			if (!goodIcon) {
+				errors.push({ path, icon });
+				continue;
+			}
+			if (iconicFileIcon[path]?.icon) iconicFileIcon[path].icon = goodIcon;
+			else {
+				iconicFileIcon[path] = {
+					icon: goodIcon,
+					unsynced: [this.app.appId],
+				};
+			}
+			proceeded += 1;
+		}
+		//save
+		await iconic.saveData(iconicSettings);
+		console.warn("Iconize -> Iconic = Done");
+		if (errors.length > 0) {
+			console.error("Error processing data for :", errors);
+			const errorsStr = errors
+				.map((x) => `<li><bold><code>${x.path}</bold></code></li>`)
+				.join("");
+			new InfoModal(
+				this.app,
+				undefined,
+				`<code>${proceeded}</code> paths has been processed correctly.<br/><br/>No data found for:<ul>${errorsStr}</ul>See console for more information.`,
+			).open();
+		} else {
+			//open a text modal for the information
+			new InfoModal(
+				this.app,
+				undefined,
+				`<code>${proceeded}</code> paths has been processed correctly.<br/><br/>Please, reload Iconic plugin to apply.`,
+			).open();
+		}
+	}
+}
+
+class InfoModal extends Modal {
+	constructor(
+		app: App,
+		title: string | undefined,
+		content: string,
+		proceed?: (ok: boolean) => void,
+	) {
+		super(app);
+		this.contentEl.addClass("my-svgs-modal");
+		if (title) this.setTitle(title);
+		this.setContent(sanitizeHTMLToDom(content));
+
+		if (proceed) {
+			new Setting(this.contentEl)
+				.addButton((cb) =>
+					cb
+						.setButtonText("Proceed")
+						.setWarning()
+						.onClick(() => {
+							proceed(true);
+							this.close();
+						}),
+				)
+				.addButton((cb) =>
+					cb
+						.setButtonText("Cancel")
+						.setCta()
+						.onClick(() => {
+							proceed(false);
+							this.close();
+						}),
+				);
+		} else {
+			new Setting(this.contentEl).addButton((cb) =>
+				cb
+					.setButtonText("Ok")
+					.setCta()
+					.onClick(() => this.close()),
+			);
 		}
 	}
 }

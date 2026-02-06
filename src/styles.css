@@ -459,3 +459,10 @@ input[type='text'].my-svgs-is-invalid {
 .my-svgs-icons-grid {
 	scroll-behavior: smooth;
 }
+
+.my-svgs-button-convertion .setting-item-control button {
+	width: 100%;
+}
+.my-svgs-modal code {
+	font-family: var(--font-monospace);
+}
