@@ -21,6 +21,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install bun
         uses: oven-sh/setup-bun@v2
+      - name: Installing dep
+        run: bun install
       - name: build
         run: bun run build --output-dir ${{env.PLUGIN_NAME}}
       - name: Get version
